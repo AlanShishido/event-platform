@@ -16,7 +16,7 @@ export function Event() {
                     : <div className="flex-1"/>
                 }
                 <Sidebar/>
-        </main>
+            </main>
         </div>
     )
 }

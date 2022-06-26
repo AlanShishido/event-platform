@@ -5,50 +5,22 @@ import {
 	CaretRight,
 } from "phosphor-react";
 import { DefaultUi, Player, Youtube } from "@vime/react";
-import { gql, useQuery } from "@apollo/client";
-
 import "@vime/core/themes/default.css";
+import { useGetLessonBySlugQuery } from "../graphql/generated";
 
-const GET_LESSON_BY_SLUG = gql`
-	query GetLessonBySlug($slug: String) {
-		lesson(where: { slug: $slug }) {
-			title
-			videoId
-			description
-			teacher {
-				bio
-				avatarURL
-				name
-			}
-		}
-	}
-`;
-
-interface GerLessonBySlugResponse {
-    lesson: {
-        title: string;
-        videoId: string;
-        description: string;
-        teacher: {
-            bio: string;
-            avatarURL: string;
-            name: string;
-        }
-    }
-}
 
 interface VideoProps {
 	lessonSlug: string;
 }
 
 export function Video(props: VideoProps) {
-    const {data} = useQuery<GerLessonBySlugResponse>(GET_LESSON_BY_SLUG, {
+    const {data} = useGetLessonBySlugQuery({
         variables: {
             slug: props.lessonSlug,
         }
     });
 
-    if (!data) {
+    if (!data || !data.lesson) {
         return (
             <div className="flex-1">
                 <p>Carregando ...</p>
@@ -78,6 +50,7 @@ export function Video(props: VideoProps) {
                             {data.lesson.description}
 						</p>
 
+						{data.lesson.teacher && (
 						<div className="flex items-center gap-4 mt-6">
 							<img
 								className="h-16 w-16 rounded-full border-2 border-blue-500"
@@ -95,6 +68,7 @@ export function Video(props: VideoProps) {
 								</span>
 							</div>
 						</div>
+						)}
 					</div>
 
 					<div className="flex flex-col gap-4">
